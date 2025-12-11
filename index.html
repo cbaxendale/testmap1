@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Species observations (Mapbox tileset/KML version)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+  <style>
+    body { margin:0; font-family: Arial, sans-serif; }
+    #map { position:absolute; top:0; bottom:0; width:100%; }
+    .menu {
+      position:absolute; z-index:2; background: rgba(255,255,255,0.95);
+      margin:12px; padding:10px; border-radius:6px; box-shadow:0 1px 4px rgba(0,0,0,.2);
+    }
+    .menu label { display:block; margin-bottom:8px; cursor:pointer; }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<div class="menu" id="layerMenu">
+  <strong>Toggle species</strong>
+  <!-- Replace data-layer values with the exact layer IDs you set in Mapbox Studio -->
+  <label><input type="checkbox" data-layer="baxcat.2adelff3" checked> Species A</label>
+  <label><input type="checkbox" data-layer="baxcat.b0objwlb" checked> Species B</label>
+
+</div>
+
+<script>
+  // ---------- CONFIGURE THESE ----------
+  const MAPBOX_TOKEN = 'pk.eyJ1IjoiYmF4Y2F0IiwiYSI6ImNtaTdwdXcyajAzY3oyaW9xMHE2Y2poY3EifQ.ocSl3uQCIsfIxnRuEzLKuw';
+  const STYLE_URL = 'mapbox://styles/baxcat/cmi7q0qry000301si0gcu4qhw'; // from Mapbox Studio
+  // The layer IDs below must match the layer IDs you used in Mapbox Studio exactly.
+  const layerIds = ['baxcat.2adelff3','baxcat.b0objwlb'];
+  // -------------------------------------
+
+  mapboxgl.accessToken = MAPBOX_TOKEN;
+
+  const map = new mapboxgl.Map({
+    container: 'map',
+    style: STYLE_URL,
+    center: [-123.3, 49.25], // change to your study area center
+    zoom: 10
+  });
+
+  map.on('load', () => {
+    // map is using your Mapbox Studio style which already contains the four tileset-based layers.
+    // Confirm that the layers exist:
+    layerIds.forEach(id => {
+      if (!map.getLayer(id)) {
+        console.warn('Layer not found in style (check id):', id);
+      }
+    });
+  });
+
+  // Toggle checkbox visibility -> layout.visibility
+  document.getElementById('layerMenu').addEventListener('change', (e) => {
+    const cb = e.target;
+    if (!cb || !cb.dataset || !cb.dataset.layer) return;
+    const id = cb.dataset.layer;
+    const vis = cb.checked ? 'visible' : 'none';
+    if (map.getLayer(id)) {
+      map.setLayoutProperty(id, 'visibility', vis);
+    } else {
+      console.warn('Attempted to toggle missing layer:', id);
+    }
+  });
+
+  // Optional: popup on click (works if layers are point layers)
+  layerIds.forEach(id => {
+    map.on('click', id, (e) => {
+      if (!e.features || !e.features.length) return;
+      const props = e.features[0].properties || {};
+      const coords = e.lngLat;
+      const html = Object.keys(props).map(k => `<strong>${k}</strong>: ${props[k]}`).join('<br>');
+      new mapboxgl.Popup().setLngLat(coords).setHTML(html).addTo(map);
+    });
+
+    map.on('mouseenter', id, () => { map.getCanvas().style.cursor = 'pointer'; });
+    map.on('mouseleave', id, () => { map.getCanvas().style.cursor = ''; });
+  });
+
+</script>
+</body>
+</html>
