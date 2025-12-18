@@ -24,7 +24,9 @@
   <strong>Toggle species</strong>
   <!-- Replace data-layer values with the exact layer IDs you set in Mapbox Studio -->
   <label><input type="checkbox" data-layer="Deer Observations" checked> Deer Observations</label>
-  <label><input type="checkbox" data-layer="Black Bear Observations" checked> Black Bear Observations</label>
+  <label><input type="checkbox" data-layer="Bear Observations" checked> Bear Observations</label>
+  <label><input type="checkbox" data-layer="Moose Observations" checked> Moose Observations</label>
+  <label><input type="checkbox" data-layer="Wolf Observations" checked> Wolf Observations</label>
 
 </div>
 
@@ -33,7 +35,7 @@
   const MAPBOX_TOKEN = 'pk.eyJ1IjoiYmF4Y2F0IiwiYSI6ImNtaTdwdXcyajAzY3oyaW9xMHE2Y2poY3EifQ.ocSl3uQCIsfIxnRuEzLKuw';
   const STYLE_URL = 'mapbox://styles/baxcat/cmi7q0qry000301si0gcu4qhw'; // from Mapbox Studio
   // The layer IDs below must match the layer IDs you used in Mapbox Studio exactly.
-  const layerIds = ['Deer Observations','Black Bear Observations'];
+  const layerIds = ['Deer Observations','Bear Observations','Moose Observations','Wolf Observations'];
   // -------------------------------------
 
   mapboxgl.accessToken = MAPBOX_TOKEN;
@@ -86,3 +88,4 @@
 </body>
 
 </html>
+
