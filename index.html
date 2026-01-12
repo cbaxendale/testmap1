@@ -72,21 +72,46 @@
 
   // Optional: popup on click (works if layers are point layers)
   layerIds.forEach(id => {
-    map.on('click', id, (e) => {
-      if (!e.features || !e.features.length) return;
-      const props = e.features[0].properties || {};
-      const coords = e.lngLat;
-      const html = Object.keys(props).map(k => `<strong>${k}</strong>: ${props[k]}`).join('<br>');
-      new mapboxgl.Popup().setLngLat(coords).setHTML(html).addTo(map);
-    });
+  map.on('click', id, (e) => {
+    if (!e.features || !e.features.length) return;
 
-    map.on('mouseenter', id, () => { map.getCanvas().style.cursor = 'pointer'; });
-    map.on('mouseleave', id, () => { map.getCanvas().style.cursor = ''; });
+    const feature = e.features[0];
+    const imgUrl = feature.properties?.img_url;
+
+    // If no image URL, do nothing
+    if (!imgUrl) return;
+
+    const popupHtml = `
+      <img 
+        src="${imgUrl}"
+        style="
+          max-width:260px;
+          max-height:260px;
+          border-radius:6px;
+          display:block;
+        "
+      />
+    `;
+
+    new mapboxgl.Popup({ closeButton: true })
+      .setLngLat(e.lngLat)
+      .setHTML(popupHtml)
+      .addTo(map);
   });
 
+  map.on('mouseenter', id, () => {
+    map.getCanvas().style.cursor = 'pointer';
+  });
+
+  map.on('mouseleave', id, () => {
+    map.getCanvas().style.cursor = '';
+  });
+});
+  
 </script>
 </body>
 
 </html>
+
 
 
